@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<head th:insert="fragments/header :: header"></head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Job4j TODO</a>
+        <div class="collapse navbar-collapse">
+            <div class="navbar-nav">
+                <a th:class="${status == null} ? 'nav-item nav-link active' : 'nav-item nav-link'"
+                   th:href="@{/}">Все</a>
+                <a th:class="${status != null and status == 'done'}
+                ? 'nav-item nav-link active' : 'nav-item nav-link'"
+                   th:href="@{/done}">Выполненные</a>
+                <a th:class="${status != null and status == 'new'}
+                ? 'nav-item nav-link active' : 'nav-item nav-link'"
+                   th:href="@{/new}">Новые</a>
+                <a class="nav-item nav-link active" th:href="@{/add}">Добавить задание</a>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="container mt-2">
+    <div class="row">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Название</th>
+                <th scope="col">Дата создания</th>
+                <th scope="col">Выполнено</th>
+            </tr>
+            </thead>
+<!--            <tbody>-->
+<!--            <tr th:each="film: ${films}">-->
+<!--                <td><a th:text="${film.name}" th:href="@{/films/{filmId}(filmId=${film.id})}"></a></td>-->
+<!--                <td th:text="${film.genre}"/>-->
+<!--                <td th:text="${film.year}"/>-->
+<!--                <td th:text="${film.minimalAge}"/>-->
+<!--                <td th:text="${film.durationInMinutes}"/>-->
+<!--            </tr>-->
+<!--            </tbody>-->
+        </table>
+    </div>
+</div>
+</body>
+<div th:include="fragments/footer :: footer"></div>
+</html>

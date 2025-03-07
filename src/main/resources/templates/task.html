@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<head th:insert="fragments/header :: header"></head>
+<body>
+<div class="container">
+    <div class="row mb-3">
+        <div class="col-9">
+            <div class="mb-3 d-flex">
+                <label for="genre" class="form-label me-2"><b>Название:</b></label>
+                <div th:text="*{genre}" id="genre"/>
+            </div>
+            <div class="mb-3 d-flex">
+                <label for="year" class="form-label me-2"><b>Дата создания:</b></label>
+                <div th:text="*{year}" id="year"/>
+            </div>
+            <div class="mb-3 d-flex">
+                <label for="minimalAge" class="form-label me-2"><b>Выполнено:</b></label>
+                <div th:text="*{minimalAge}" id="minimalAge"/>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <div th:text="*{description}"/>
+    </div>
+
+
+    <form class="mt-3" th:action="@{/vacancies/update}" method="post" th:object="${vacancy}" enctype="multipart/form-data">
+        <input type="hidden" name="id" th:field="*{id}">
+        <input type="hidden" name="fileId" th:field="*{fileId}">
+        <div class="row mb-3">
+            <div class="col-9">
+                <div class="mb-3">
+                    <label for="title" class="form-label"><b>Название</b></label>
+                    <input type="text" class="form-control" id="title" name="title"
+                           th:field="*{title}"
+                           placeholder="Предлагая должность, например, Ведущий Java разработчик">
+                </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label"><b>Дата создания</b></label>
+                    <input type="text" class="form-control" id="title" name="title"
+                           th:field="*{title}"
+                           placeholder="Предлагая должность, например, Ведущий Java разработчик">
+                </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="visible" class="form-check-input" id="visible" th:field="*{visible}">
+                    <label class="form-check-label" for="visible">Выполнено</label>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label"><b>Описание</b></label>
+            <textarea class="form-control" id="description"
+                      name="description" th:field="*{description}"
+                      rows="25" placeholder="Опишите требования к кандидату"></textarea>
+        </div>
+        <div class="mb-3 row">
+            <div class="col-6"></div>
+            <div class="col-6">
+                <div class="row">
+                    <div class="col-4"><a class="btn btn-light w-100" th:href="@{/vacancies}">Выполнено</a></div>
+                    <div class="col-4"><a class="btn btn-danger w-100" th:href="@{/vacancies/delete/{id}(id=${vacancy.id})}">Редактировать</a></div>
+                    <div class="col-4"><button class="btn btn-success w-100">Удалить</button>
+                    <div class="col-4"><button class="btn btn-success w-100" type="submit">Сохранить</button>
+                    <div class="col-4"><button class="btn btn-success w-100">Отмена</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<div th:include="fragments/footer :: footer"></div>
+</html>
