@@ -30,15 +30,13 @@
                 <th scope="col">Выполнено</th>
             </tr>
             </thead>
-<!--            <tbody>-->
-<!--            <tr th:each="film: ${films}">-->
-<!--                <td><a th:text="${film.name}" th:href="@{/films/{filmId}(filmId=${film.id})}"></a></td>-->
-<!--                <td th:text="${film.genre}"/>-->
-<!--                <td th:text="${film.year}"/>-->
-<!--                <td th:text="${film.minimalAge}"/>-->
-<!--                <td th:text="${film.durationInMinutes}"/>-->
-<!--            </tr>-->
-<!--            </tbody>-->
+            <tbody>
+            <tr th:each="task: ${tasks}">
+                <td><a th:text="${task.title}" th:href="@{/task/{taskId}(taskId=${task.id})}"></a></td>
+                <td th:text="${task.created.format(T(java.time.format.DateTimeFormatter).ofPattern('dd MMMM yyyy HH:mm'))}"/>
+                <td th:text="${task.done != null and task.done == true} ? 'да' : ''"/>
+            </tr>
+            </tbody>
         </table>
     </div>
 </div>
