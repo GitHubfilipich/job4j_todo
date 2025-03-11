@@ -3,45 +3,24 @@
 <head th:insert="fragments/header :: header"></head>
 <body>
 <div class="container">
-<!--    <div class="row mb-3">-->
-<!--        <div class="col-9">-->
-<!--            <div class="mb-3 d-flex">-->
-<!--                <label for="title" class="form-label me-2"><b>Название:</b></label>-->
-<!--                <div th:text="*{title}" id="title"/>-->
-<!--            </div>-->
-<!--            <div class="mb-3 d-flex">-->
-<!--                <label for="created" class="form-label me-2"><b>Дата создания:</b></label>-->
-<!--                <div th:text="*{created.format(T(java.time.format.DateTimeFormatter).ofPattern('dd MMMM yyyy HH:mm'))}" id="created"/>-->
-<!--            </div>-->
-<!--            <div class="mb-3 d-flex">-->
-<!--                <label for="done" class="form-label me-2"><b>Выполнено:</b></label>-->
-<!--                <div th:text="*{done == true} ? 'да' : 'нет'" id="done"/>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!--    <div class="mb-3">-->
-<!--        <div th:text="*{description}"/>-->
-<!--    </div>-->
-
-
+    <div th:if="${mode != null and mode == 'taskExist'}"><h3>Задание</h3></div>
+    <div th:if="${mode != null and mode == 'taskEdit'}"><h3>Задание (редактирование)</h3></div>
+    <div th:if="${mode != null and mode == 'taskNew'}"><h3>Задание (создание)</h3></div>
     <form class="mt-3" th:action="@{/task/update}" method="post" th:object="${task}">
         <input type="hidden" name="id" th:field="*{id}">
+        <input type="hidden" name="mode" th:value="${mode}">
         <div class="row mb-3">
             <div class="col-9">
                 <div class="mb-3">
                     <label for="title" class="form-label"><b>Название</b></label>
                     <input type="text" class="form-control" id="title" name="title"
                            th:field="*{title}"
-                           placeholder="Заголовок задания">
+                           placeholder="Заголовок задания"
+                           th:attr="readonly=${mode == 'taskExist'}"/>
                 </div>
-                <div class="mb-3">
-                    <label for="created" class="form-label"><b>Дата создания</b></label>
-                    <input type="text" class="form-control" id="created" name="created"
-                           th:field="*{created}">
-                </div>
-                <div class="form-check mb-3">
-                    <input type="checkbox" name="visible" class="form-check-input" id="done" th:field="*{done}">
-                    <label class="form-check-label" for="done">Выполнено</label>
+                <div class="mb-3 d-flex">
+                    <label for="created" class="form-label me-2"><b>Дата создания:</b></label>
+                    <div th:text="*{created.format(T(java.time.format.DateTimeFormatter).ofPattern('dd MMMM yyyy HH:mm'))}" id="created"/>
                 </div>
                 <div class="mb-3 d-flex">
                     <label for="doneLabel" class="form-label me-2"><b>Выполнено:</b></label>
@@ -53,18 +32,19 @@
             <label for="description" class="form-label"><b>Описание</b></label>
             <textarea class="form-control" id="description"
                       name="description" th:field="*{description}"
-                      rows="25" placeholder="Описание задания"></textarea>
+                      rows="5" placeholder="Описание задания"
+                      th:attr="readonly=${mode == 'taskExist'}"></textarea>
         </div>
         <div class="mb-3 row">
-            <div class="col-6"></div>
             <div class="col-6">
-                <div class="row">
-                    <div class="col-4"><a class="btn btn-light w-100" th:href="@{/task/setDone/{id}(id=*{id})}">Выполнено</a></div>
-                    <div class="col-4"><a class="btn btn-danger w-100" th:href="@{/task/edit/{id}(id=*{id})}">Редактировать</a></div>
-                    <div class="col-4"><button class="btn btn-success w-100" th:href="@{/task/delete/{id}(id=*{id})}">Удалить</button>
-                    <div class="col-4"><button class="btn btn-success w-100" type="submit">Сохранить</button>
-                    <div class="col-4"><button class="btn btn-success w-100" th:href="@{/task/{id}(id=*{id})}">Отмена</button>
-                    </div>
+                <div class="row" th:if="${mode != null and mode == 'taskExist'}">
+                    <div class="col-4"><a class="btn btn-primary w-100" th:href="@{/task/setDone/{id}(id=*{id})}">Выполнить</a></div>
+                    <div class="col-4"><a class="btn btn-primary w-100" th:href="@{/task/edit/{id}(id=*{id})}">Редактировать</a></div>
+                    <div class="col-4"><a class="btn btn-danger w-100" th:href="@{/task/delete/{id}(id=*{id})}">Удалить</a></div>
+                </div>
+                <div class="row" th:if="${mode != null and (mode == 'taskEdit' or mode == 'taskNew')}">
+                    <div class="col-4"><button class="btn btn-primary w-100" type="submit">Сохранить</button></div>
+                    <div class="col-4"><a class="btn btn-danger w-100" th:href="@{/}">Отмена</a></div>
                 </div>
             </div>
         </div>
