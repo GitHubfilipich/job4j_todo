@@ -3,7 +3,7 @@ package ru.job4j.todo.service;
 import org.springframework.stereotype.Controller;
 import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.model.Task;
-import ru.job4j.todo.store.Store;
+import ru.job4j.todo.repository.Store;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +35,7 @@ public class SimpleTaskService implements TaskService {
     @Override
     public Optional<TaskDTO> findById(int id) {
         return store.findById(id)
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone()));
+                .map(SimpleTaskService::taskToTaskDto);
     }
 
     @Override
@@ -49,18 +49,26 @@ public class SimpleTaskService implements TaskService {
     }
 
     @Override
-    public boolean update(Task task) {
-        return store.update(task);
+    public boolean update(TaskDTO task) {
+        return store.update(taskDtoToTask(task));
     }
 
     @Override
-    public boolean save(Task task) {
-        return store.save(task);
+    public boolean save(TaskDTO task) {
+        return store.save(taskDtoToTask(task));
     }
 
     private List<TaskDTO> taskCollectionToTaskDtoCollection(Collection<Task> taskCollection) {
         return taskCollection.stream()
-                .map(task -> new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone()))
+                .map(SimpleTaskService::taskToTaskDto)
                 .toList();
+    }
+
+    private static TaskDTO taskToTaskDto(Task task) {
+        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone());
+    }
+
+    private static Task taskDtoToTask(TaskDTO task) {
+        return new Task(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone());
     }
 }

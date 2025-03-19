@@ -1,7 +1,6 @@
 package ru.job4j.todo.service;
 
 import ru.job4j.todo.dto.TaskDTO;
-import ru.job4j.todo.model.Task;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -19,7 +18,7 @@ public interface TaskService {
 
     boolean deleteById(int id);
 
-    boolean update(Task task);
+    boolean update(TaskDTO task);
 
-    boolean save(Task task);
+    boolean save(TaskDTO task);
 }

@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.dto.TaskDTO;
-import ru.job4j.todo.model.Task;
 import ru.job4j.todo.service.TaskService;
 
 import java.time.LocalDateTime;
@@ -92,14 +91,14 @@ public class TaskController {
     }
 
     @PostMapping("/task/update")
-    public String saveOrUpdate(@ModelAttribute Task task, @RequestParam("mode") String mode, Model model) {
+    public String saveOrUpdate(@ModelAttribute TaskDTO task, @RequestParam("mode") String mode, Model model) {
         if ("taskNew".equals(mode)) {
             return save(task, model);
         }
         return update(task, model);
     }
 
-    private String save(Task task, Model model) {
+    private String save(TaskDTO task, Model model) {
         if (!taskService.save(task)) {
             model.addAttribute("message", "Не удалось сохранить задание");
             return "errors/404";
@@ -107,7 +106,7 @@ public class TaskController {
         return "redirect:/";
     }
 
-    private String update(Task task, Model model) {
+    private String update(TaskDTO task, Model model) {
         if (!taskService.update(task)) {
             model.addAttribute("message", "Не удалось обновить задание");
             return "errors/404";
