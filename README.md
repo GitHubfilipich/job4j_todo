@@ -19,13 +19,12 @@ PostgreSQL 16
 
 # Запуск проекта:
 Создать локальную копию проекта клонированием из репозитория https://github.com/GitHubfilipich/job4j_todo  
-В PostgreSQL создать базу данных и в папке проекта в файлах "...\db\liquibase.properties" и
-"...\src\main\resources\application.properties" указать её адрес (url), имя пользователя (username) и
-пароль (password).  
+В PostgreSQL создать базу данных и в папке проекта в файлах "...\db\liquibase.properties" и 
+"...\src\main\resources\hibernate.cfg.xml" указать её адрес (url), имя пользователя (username) и пароль (password).  
 В терминале в папке проекта выполнить скрипты создания БД таблиц командой "mvn liquibase:update -Pproduction".  
-Создать исполняемый файл проекта "job4j_todo-1.0-SNAPSHOT.jar" в папке "target" проекта командой
-"mvn clean package -Pproduction -DskipTests".  
-Запустить исполняемый файл командой "java -jar target/job4j_todo-1.0-SNAPSHOT.jar".  
+Создать исполняемый файл проекта "job4j_todo-1.0.jar" в папке "target" проекта командой
+"mvn clean package spring-boot:repackage -DskipTests -P production". 
+Запустить исполняемый файл командой "java -jar target/job4j_todo-1.0.jar".  
 Сайт проекта находится по адресу http://localhost:8080/
 
 # Взаимодействие с приложением:
