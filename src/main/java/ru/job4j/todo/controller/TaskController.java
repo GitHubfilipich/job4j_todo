@@ -42,7 +42,6 @@ public class TaskController {
     @GetMapping("/add")
     public String addTask(Model model) {
         TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setCreated(LocalDateTime.now());
         model.addAttribute("task", taskDTO);
         model.addAttribute("mode", "taskNew");
         return "task";
@@ -93,6 +92,7 @@ public class TaskController {
     @PostMapping("/task/update")
     public String saveOrUpdate(@ModelAttribute TaskDTO task, @RequestParam("mode") String mode, Model model) {
         if ("taskNew".equals(mode)) {
+            task.setCreated(LocalDateTime.now());
             return save(task, model);
         }
         return update(task, model);

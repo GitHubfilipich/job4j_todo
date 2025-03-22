@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.Task;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,6 +20,8 @@ public class TaskStore implements Store {
         try (Session session = sf.openSession()) {
             return session.createQuery("from Task ORDER BY created", Task.class)
                     .list();
+        } catch (Exception e) {
+            return List.of();
         }
     }
 
@@ -27,6 +30,8 @@ public class TaskStore implements Store {
         try (Session session = sf.openSession()) {
             return session.createQuery("from Task WHERE done = true ORDER BY created", Task.class)
                     .list();
+        } catch (Exception e) {
+            return List.of();
         }
     }
 
@@ -35,6 +40,8 @@ public class TaskStore implements Store {
         try (Session session = sf.openSession()) {
             return session.createQuery("from Task WHERE done = false ORDER BY created", Task.class)
                     .list();
+        } catch (Exception e) {
+            return List.of();
         }
     }
 
@@ -42,6 +49,8 @@ public class TaskStore implements Store {
     public Optional<Task> findById(int id) {
         try (Session session = sf.openSession()) {
             return Optional.ofNullable(session.get(Task.class, id));
+        } catch (Exception e) {
+            return Optional.empty();
         }
     }
 
@@ -84,12 +93,9 @@ public class TaskStore implements Store {
         Session session = sf.openSession();
         try {
             session.beginTransaction();
-            int numUpdated = session.createQuery("UPDATE Task SET title = :title, description = :description"
-                            + ", created = :created, done = :done WHERE id = :id")
+            int numUpdated = session.createQuery("UPDATE Task SET title = :title, description = :description WHERE id = :id")
                     .setParameter("title", task.getTitle())
                     .setParameter("description", task.getDescription())
-                    .setParameter("created", task.getCreated())
-                    .setParameter("done", task.isDone())
                     .setParameter("id", task.getId())
                     .executeUpdate();
             return numUpdated > 0;
