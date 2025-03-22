@@ -9,7 +9,6 @@ import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.service.TaskService;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.*;
@@ -92,7 +91,6 @@ class TaskControllerTest {
     @Test
     void whenAddTaskThenGetPageWithNewTask() {
         var task = new TaskDTO();
-        task.setCreated(LocalDateTime.now());
         var model = new ConcurrentModel();
 
         var actual = taskController.addTask(model);
@@ -100,14 +98,7 @@ class TaskControllerTest {
         var actualMode = model.getAttribute("mode");
 
         assertThat(actual).isEqualTo("task");
-        assertThat(actualTask).satisfies(o -> {
-            assertThat(actualTask).usingRecursiveComparison()
-                    .ignoringFields("created")
-                    .isEqualTo(task);
-            assertThat(actualTask).extracting("created")
-                    .asInstanceOf(InstanceOfAssertFactories.LOCAL_DATE_TIME)
-                    .isCloseTo(task.getCreated(), within(1, ChronoUnit.SECONDS));
-        });
+        assertThat(actualTask).isEqualTo(task);
         assertThat(actualMode).isEqualTo("taskNew");
     }
 

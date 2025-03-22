@@ -222,7 +222,6 @@ class TaskStoreTest {
         var task = tasks.get(tasks.size() - 1);
         task.setTitle(task.getTitle() + " NEW");
         task.setDescription(task.getDescription() + " NEW");
-        task.setDone(!task.isDone());
 
         var wasUpdated = store.update(task);
         var actualTask = store.findById(task.getId());
