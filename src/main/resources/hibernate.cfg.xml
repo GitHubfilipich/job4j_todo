@@ -14,5 +14,6 @@
         <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
 
         <mapping class="ru.job4j.todo.model.Task" />
+        <mapping class="ru.job4j.todo.model.User" />
     </session-factory>
 </hibernate-configuration>

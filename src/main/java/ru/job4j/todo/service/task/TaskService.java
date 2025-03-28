@@ -1,4 +1,4 @@
-package ru.job4j.todo.service;
+package ru.job4j.todo.service.task;
 
 import ru.job4j.todo.dto.TaskDTO;
 

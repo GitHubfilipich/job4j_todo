@@ -1,4 +1,4 @@
-package ru.job4j.todo.repository;
+package ru.job4j.todo.repository.task;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.dto.TaskDTO;
-import ru.job4j.todo.service.TaskService;
+import ru.job4j.todo.service.task.TaskService;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

@@ -14,7 +14,7 @@
     <div class="container">
         <a class="navbar-brand" href="/">Job4j TODO</a>
         <div class="collapse navbar-collapse">
-            <div class="navbar-nav">
+            <div class="navbar-nav" th:if="${user != null}">
                 <a th:class="${mode == null} ? 'nav-item nav-link active' : 'nav-item nav-link'"
                    th:href="@{/}">Все</a>
                 <a th:class="${mode != null and mode == 'listDone'}
@@ -26,6 +26,14 @@
                 <a th:class="${mode != null and mode == 'taskNew'}
                 ? 'nav-item nav-link active' : 'nav-item nav-link'"
                    th:href="@{/add}">Добавить задание</a>
+            </div>
+            <div class="d-flex ms-auto" th:if="${user == null}">
+                <a class="nav-link text-secondary me-3" th:href="@{/users/register}">Регистрация</a>
+                <a class="nav-link text-secondary" th:href="@{/users/login}">Войти</a>
+            </div>
+            <div class="d-flex ms-auto" th:if="${user != null}">
+                <a class="nav-link text-secondary me-3" href="#" th:text="${user.name}"></a>
+                <a class="nav-link text-secondary" th:href="@{/users/logout}">Выйти</a>
             </div>
         </div>
     </div>

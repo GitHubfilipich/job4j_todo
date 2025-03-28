@@ -1,9 +1,9 @@
-package ru.job4j.todo.service;
+package ru.job4j.todo.service.task;
 
 import org.springframework.stereotype.Controller;
 import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.model.Task;
-import ru.job4j.todo.repository.Store;
+import ru.job4j.todo.repository.task.Store;
 
 import java.util.Collection;
 import java.util.List;

@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.model.Task;
-import ru.job4j.todo.repository.Store;
+import ru.job4j.todo.repository.task.Store;
+import ru.job4j.todo.service.task.SimpleTaskService;
+import ru.job4j.todo.service.task.TaskService;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

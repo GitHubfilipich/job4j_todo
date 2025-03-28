@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head th:insert="fragments/header :: header">
+    <title>Регистрация нового пользователя</title>
+</head>
+<body>
+<div class="container-fluid p-0">
+    <div class="container">
+        <form class="mt-3" th:action="@{/users/register}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="name" class="form-label"><b>Имя</b></label>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Ваше имя" required>
+            </div>
+            <div class="mb-3">
+                <label for="login" class="form-label"><b>Логин</b></label>
+                <input type="text" class="form-control" id="login" name="login" placeholder="Ваш логин" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label"><b>Пароль</b></label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3 row">
+                <div class="col-6"></div>
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col-6"><a class="btn btn-danger w-100" th:href="@{/}">Отмена</a></div>
+                        <div class="col-6"><button class="btn btn-primary w-100" type="submit">Зарегистрироваться</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>

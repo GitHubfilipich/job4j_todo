@@ -1,4 +1,4 @@
-package ru.job4j.todo.repository;
+package ru.job4j.todo.repository.task;
 
 import ru.job4j.todo.model.Task;
 

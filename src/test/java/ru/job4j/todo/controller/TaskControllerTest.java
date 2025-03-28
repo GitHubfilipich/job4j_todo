@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.ui.ConcurrentModel;
 import ru.job4j.todo.dto.TaskDTO;
-import ru.job4j.todo.service.TaskService;
+import ru.job4j.todo.service.task.TaskService;
 
 import java.time.LocalDateTime;
 import java.util.*;
