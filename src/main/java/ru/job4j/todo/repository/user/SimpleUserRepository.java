@@ -39,8 +39,7 @@ public class SimpleUserRepository implements UserRepository {
             return session.createQuery("from User WHERE login = :login AND password = :password", User.class)
                     .setParameter("login", login)
                     .setParameter("password", password)
-                    .list()
-                    .stream().findFirst();
+                    .uniqueResultOptional();
         } catch (Exception e) {
             log.error("Ошибка получения пользователя", e);
         }
