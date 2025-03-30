@@ -29,11 +29,7 @@ class TaskStoreTest {
     @BeforeAll
     public static void setUp(@Autowired SessionFactory awSf) {
         sf = awSf;
-        store = new TaskStore(sf);
-        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false),
-                new Task(0, "task2", "descr2", LocalDateTime.now(), false),
-                new Task(0, "task3", "descr3", LocalDateTime.now(), true),
-                new Task(0, "task4", "descr4", LocalDateTime.now(), true));
+        store = new TaskStore(new CrudRepository(sf));
     }
 
     @AfterEach
@@ -61,6 +57,10 @@ class TaskStoreTest {
     }
 
     private void addTasks() {
+        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false),
+                new Task(0, "task2", "descr2", LocalDateTime.now(), false),
+                new Task(0, "task3", "descr3", LocalDateTime.now(), true),
+                new Task(0, "task4", "descr4", LocalDateTime.now(), true));
         for (Task task : tasks) {
             store.save(task);
         }
@@ -280,10 +280,10 @@ class TaskStoreTest {
     @Test
     void whenSaveUnSuccessfulThenGetFalse() {
         var spySession = spy(sf.openSession());
-        doThrow(new RuntimeException()).when(spySession).save(any());
+        doThrow(new RuntimeException()).when(spySession).persist(any());
         var spySf = spy(sf);
         when(spySf.openSession()).thenReturn(spySession);
-        var testStore = new TaskStore(spySf);
+        var testStore = new TaskStore(new CrudRepository(spySf));
         var task = new Task();
 
         var wasSaved = testStore.save(task);
