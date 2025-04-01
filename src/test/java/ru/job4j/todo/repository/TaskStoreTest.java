@@ -1,5 +1,6 @@
 package ru.job4j.todo.repository;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -7,11 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.job4j.todo.model.Task;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.repository.task.Store;
 import ru.job4j.todo.repository.task.TaskStore;
+import ru.job4j.todo.repository.user.SimpleUserRepository;
+import ru.job4j.todo.repository.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -24,18 +29,28 @@ class TaskStoreTest {
 
     public static SessionFactory sf;
     private static Store store;
+    private static UserRepository userRepository;
     private static List<Task> tasks;
+    private static List<User> users;
 
     @BeforeAll
     public static void setUp(@Autowired SessionFactory awSf) {
         sf = awSf;
-        store = new TaskStore(new CrudRepository(sf));
+        var crudRepository = new CrudRepository(sf);
+        store = new TaskStore(crudRepository);
+        userRepository = new SimpleUserRepository(crudRepository);
     }
 
     @AfterEach
     public void clear() {
         for (Task task : store.findAll()) {
             store.deleteById(task.getId());
+        }
+        try (Session session = sf.openSession()) {
+            var tx = session.beginTransaction();
+            var query = session.createQuery("DELETE User");
+            query.executeUpdate();
+            tx.commit();
         }
     }
 
@@ -57,10 +72,20 @@ class TaskStoreTest {
     }
 
     private void addTasks() {
-        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false),
-                new Task(0, "task2", "descr2", LocalDateTime.now(), false),
-                new Task(0, "task3", "descr3", LocalDateTime.now(), true),
-                new Task(0, "task4", "descr4", LocalDateTime.now(), true));
+        users = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            var user = new User();
+            user.setName("test" + i);
+            user.setLogin("login" + i);
+            user.setPassword("password" + i);
+            userRepository.save(user);
+            users.add(user);
+        }
+
+        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false, users.get(0)),
+                new Task(0, "task2", "descr2", LocalDateTime.now(), false, users.get(1)),
+                new Task(0, "task3", "descr3", LocalDateTime.now(), true, users.get(2)),
+                new Task(0, "task4", "descr4", LocalDateTime.now(), true, users.get(3)));
         for (Task task : tasks) {
             store.save(task);
         }
@@ -260,7 +285,12 @@ class TaskStoreTest {
     @Test
     void whenSaveSuccessfulThenGetTrue() {
         addTasks();
-        var task = new Task(0, "NEW test1", "NEW descr1", LocalDateTime.now(), true);
+        var user = new User();
+        user.setName("test5");
+        user.setLogin("login4");
+        user.setPassword("password4");
+        userRepository.save(user);
+        var task = new Task(0, "NEW test1", "NEW descr1", LocalDateTime.now(), true, user);
 
         var wasSaved = store.save(task);
         var actualTask = store.findById(task.getId());

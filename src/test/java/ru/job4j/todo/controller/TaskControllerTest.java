@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.ui.ConcurrentModel;
 import ru.job4j.todo.dto.TaskDTO;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.task.TaskService;
 
 import java.time.LocalDateTime;
@@ -32,9 +33,9 @@ class TaskControllerTest {
      */
     @Test
     void whenGetAllThenGetPageWithTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false));
+        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan"),
+                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr"),
+                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel"));
         when(taskService.findAll()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -52,9 +53,9 @@ class TaskControllerTest {
      */
     @Test
     void whenGetDoneThenGetPageWithDoneTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), true),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), true));
+        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), true, 1, "Ivan"),
+                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr"),
+                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), true, 3, "Pavel"));
         when(taskService.findDone()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -71,9 +72,9 @@ class TaskControllerTest {
      */
     @Test
     void whenGetNewThenGetPageWithNewTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), false),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false));
+        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan"),
+                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), false, 2, "Petr"),
+                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel"));
         when(taskService.findNew()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -90,10 +91,13 @@ class TaskControllerTest {
      */
     @Test
     void whenAddTaskThenGetPageWithNewTask() {
+        var user = new User();
         var task = new TaskDTO();
+        task.setUserName(user.getName());
+        task.setUserId(user.getId());
         var model = new ConcurrentModel();
 
-        var actual = taskController.addTask(model);
+        var actual = taskController.addTask(model, user);
         var actualTask = model.getAttribute("task");
         var actualMode = model.getAttribute("mode");
 
@@ -108,7 +112,7 @@ class TaskControllerTest {
     @Test
     void whenGetTaskSuccessfulThenGetPageWithTask() {
         var id = 1;
-        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false);
+        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan");
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(taskService.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
         var model = new ConcurrentModel();
@@ -179,7 +183,7 @@ class TaskControllerTest {
     @Test
     void whenEditTaskSuccessfulThenGetPageWithTask() {
         var id = 1;
-        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false);
+        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan");
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(taskService.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
         var model = new ConcurrentModel();
@@ -249,7 +253,7 @@ class TaskControllerTest {
      */
     @Test
     void whenSaveSuccessfulThenSaveTaskAndGetPageWithTasks() {
-        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false);
+        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan");
         var taskArgCaptor = ArgumentCaptor.forClass(TaskDTO.class);
         when(taskService.save(taskArgCaptor.capture())).thenReturn(true);
         var model = new ConcurrentModel();
@@ -283,7 +287,7 @@ class TaskControllerTest {
      */
     @Test
     void whenUpdateSuccessfulThenUpdateTaskAndGetPageWithTasks() {
-        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false);
+        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan");
         var taskArgCaptor = ArgumentCaptor.forClass(TaskDTO.class);
         when(taskService.update(taskArgCaptor.capture())).thenReturn(true);
         var model = new ConcurrentModel();

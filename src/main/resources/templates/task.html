@@ -8,6 +8,7 @@
     <div th:if="${mode != null and mode == 'taskNew'}"><h3>Задание (создание)</h3></div>
     <form class="mt-3" th:action="@{/task/update}" method="post" th:object="${task}">
         <input type="hidden" name="id" th:field="*{id}">
+        <input type="hidden" name="userId" th:field="*{userId}">
         <input type="hidden" name="created" th:field="*{created}">
         <input type="hidden" name="mode" th:value="${mode}">
         <div class="row mb-3">
@@ -22,6 +23,10 @@
                 <div class="mb-3 d-flex">
                     <label for="created" class="form-label me-2"><b>Дата создания:</b></label>
                     <div th:text="*{created != null} ? *{created.format(T(java.time.format.DateTimeFormatter).ofPattern('dd MMMM yyyy HH:mm'))} : ''" id="created"/>
+                </div>
+                <div class="mb-3 d-flex">
+                    <label for="userName" class="form-label me-2"><b>Автор:</b></label>
+                    <div th:text="*{userName}" id="userName"/>
                 </div>
                 <div class="mb-3 d-flex">
                     <label for="doneLabel" class="form-label me-2"><b>Выполнено:</b></label>

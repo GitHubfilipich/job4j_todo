@@ -15,4 +15,6 @@ public class TaskDTO {
     private String description;
     private LocalDateTime created;
     private boolean done;
+    private int userId;
+    private String userName;
 }

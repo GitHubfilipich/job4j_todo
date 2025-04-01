@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.dto.TaskDTO;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.service.task.TaskService;
 
 import java.time.LocalDateTime;
@@ -40,8 +41,10 @@ public class TaskController {
     }
 
     @GetMapping("/add")
-    public String addTask(Model model) {
+    public String addTask(Model model, @SessionAttribute(name = "user") User user) {
         TaskDTO taskDTO = new TaskDTO();
+        taskDTO.setUserId(user.getId());
+        taskDTO.setUserName(user.getName());
         model.addAttribute("task", taskDTO);
         model.addAttribute("mode", "taskNew");
         return "task";

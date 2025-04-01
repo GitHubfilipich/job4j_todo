@@ -9,6 +9,7 @@
             <tr>
                 <th scope="col">Название</th>
                 <th scope="col">Дата создания</th>
+                <th scope="col">Автор</th>
                 <th scope="col">Выполнено</th>
             </tr>
             </thead>
@@ -16,6 +17,7 @@
             <tr th:each="task: ${tasks}">
                 <td><a th:text="${task.title}" th:href="@{/task/{taskId}(taskId=${task.id})}"></a></td>
                 <td th:text="${task.created != null} ? ${task.created.format(T(java.time.format.DateTimeFormatter).ofPattern('dd MMMM yyyy HH:mm'))} : ''"/>
+                <td th:text="${task.userName}"/>
                 <td th:text="${task.done != null and task.done == true} ? 'да' : ''"/>
             </tr>
             </tbody>

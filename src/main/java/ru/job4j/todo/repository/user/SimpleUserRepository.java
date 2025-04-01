@@ -37,4 +37,14 @@ public class SimpleUserRepository implements UserRepository {
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<User> findById(int id) {
+        try {
+            return crudRepository.optional(session -> session.get(User.class, id));
+        } catch (Exception e) {
+            log.error("Ошибка получения пользователя", e);
+        }
+        return Optional.empty();
+    }
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.repository.task.Store;
+import ru.job4j.todo.service.user.UserService;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,9 +13,11 @@ import java.util.Optional;
 @Controller
 public class SimpleTaskService implements TaskService {
     private final Store store;
+    private final UserService userService;
 
-    public SimpleTaskService(Store store) {
+    public SimpleTaskService(Store store, UserService userService) {
         this.store = store;
+        this.userService = userService;
     }
 
     @Override
@@ -35,7 +38,7 @@ public class SimpleTaskService implements TaskService {
     @Override
     public Optional<TaskDTO> findById(int id) {
         return store.findById(id)
-                .map(SimpleTaskService::taskToTaskDto);
+                .map(this::taskToTaskDto);
     }
 
     @Override
@@ -60,15 +63,17 @@ public class SimpleTaskService implements TaskService {
 
     private List<TaskDTO> taskCollectionToTaskDtoCollection(Collection<Task> taskCollection) {
         return taskCollection.stream()
-                .map(SimpleTaskService::taskToTaskDto)
+                .map(this::taskToTaskDto)
                 .toList();
     }
 
-    private static TaskDTO taskToTaskDto(Task task) {
-        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone());
+    private TaskDTO taskToTaskDto(Task task) {
+        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(),
+                task.getUser().getId(), task.getUser().getName());
     }
 
-    private static Task taskDtoToTask(TaskDTO task) {
-        return new Task(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone());
+    private Task taskDtoToTask(TaskDTO task) {
+        return new Task(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(),
+                userService.findById(task.getUserId()).orElse(null));
     }
 }
