@@ -4,9 +4,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import ru.job4j.todo.dto.TaskDTO;
+import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.repository.task.Store;
+import ru.job4j.todo.service.priority.PriorityService;
 import ru.job4j.todo.service.task.SimpleTaskService;
 import ru.job4j.todo.service.task.TaskService;
 import ru.job4j.todo.service.user.UserService;
@@ -23,12 +25,14 @@ class SimpleTaskServiceTest {
     private Store store;
     private UserService userService;
     private TaskService service;
+    private PriorityService priorityService;
 
     @BeforeEach
     void setUp() {
         store = mock(Store.class);
         userService = mock(UserService.class);
-        service = new SimpleTaskService(store, userService);
+        priorityService = mock(PriorityService.class);
+        service = new SimpleTaskService(store, userService, priorityService);
     }
 
     /**
@@ -36,12 +40,12 @@ class SimpleTaskServiceTest {
      */
     @Test
     void whenFindAllThenGetAllTasksData() {
-        var tasks = List.of(new Task(1, "test1", "desc1", LocalDateTime.now(), true, new User()),
-                new Task(2, "test2", "desc2", LocalDateTime.now(), false, new User()),
-                new Task(3, "test3", "desc", LocalDateTime.now(), true, new User()));
+        var tasks = List.of(new Task(1, "test1", "desc1", LocalDateTime.now(), true, new User(), new Priority()),
+                new Task(2, "test2", "desc2", LocalDateTime.now(), false, new User(), new Priority()),
+                new Task(3, "test3", "desc", LocalDateTime.now(), true, new User(), new Priority()));
         var taskDtos = tasks.stream()
                 .map(task -> new TaskDTO(
-                        task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName()))
+                        task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName(), task.getPriority().getId(), task.getPriority().getName()))
                 .toList();
         when(store.findAll()).thenReturn(tasks);
 
@@ -55,12 +59,12 @@ class SimpleTaskServiceTest {
      */
     @Test
     void whenFindDoneThenGetDoneTasksData() {
-        var tasks = List.of(new Task(1, "test1", "desc1", LocalDateTime.now(), true, new User()),
-                new Task(2, "test2", "desc2", LocalDateTime.now(), true, new User()),
-                new Task(3, "test3", "desc", LocalDateTime.now(), true, new User()));
+        var tasks = List.of(new Task(1, "test1", "desc1", LocalDateTime.now(), true, new User(), new Priority()),
+                new Task(2, "test2", "desc2", LocalDateTime.now(), true, new User(), new Priority()),
+                new Task(3, "test3", "desc", LocalDateTime.now(), true, new User(), new Priority()));
         var taskDtos = tasks.stream()
                 .map(task -> new TaskDTO(
-                        task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName()))
+                        task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName(), task.getPriority().getId(), task.getPriority().getName()))
                 .toList();
         when(store.findDone()).thenReturn(tasks);
 
@@ -74,12 +78,12 @@ class SimpleTaskServiceTest {
      */
     @Test
     void whenFindNewThenGetNewTasksData() {
-        var tasks = List.of(new Task(1, "test1", "desc1", LocalDateTime.now(), false, new User()),
-                new Task(2, "test2", "desc2", LocalDateTime.now(), false, new User()),
-                new Task(3, "test3", "desc", LocalDateTime.now(), false, new User()));
+        var tasks = List.of(new Task(1, "test1", "desc1", LocalDateTime.now(), false, new User(), new Priority()),
+                new Task(2, "test2", "desc2", LocalDateTime.now(), false, new User(), new Priority()),
+                new Task(3, "test3", "desc", LocalDateTime.now(), false, new User(), new Priority()));
         var taskDtos = tasks.stream()
                 .map(task -> new TaskDTO(
-                        task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName()))
+                        task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName(), task.getPriority().getId(), task.getPriority().getName()))
                 .toList();
         when(store.findNew()).thenReturn(tasks);
 
@@ -94,8 +98,8 @@ class SimpleTaskServiceTest {
     @Test
     void whenFindByIdSuccessfulThenGetTaskData() {
         var id = 1;
-        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, new User());
-        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName());
+        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, new User(), new Priority());
+        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName(), task.getPriority().getId(), task.getPriority().getName());
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(store.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
 
@@ -186,16 +190,22 @@ class SimpleTaskServiceTest {
         var id = 1;
         var user = new User();
         user.setId(id);
-        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, user);
-        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName());
+        var idPriority = 2;
+        var priority = new Priority();
+        priority.setId(idPriority);
+        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, user, priority);
+        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName(), task.getPriority().getId(), task.getPriority().getName());
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(userService.findById(intArgCaptor.capture())).thenReturn(Optional.of(user));
+        var intArgCaptorPriority = ArgumentCaptor.forClass(Integer.class);
+        when(priorityService.findById(intArgCaptorPriority.capture())).thenReturn(Optional.of(priority));
         var taskArgCaptor = ArgumentCaptor.forClass(Task.class);
         when(store.update(taskArgCaptor.capture())).thenReturn(true);
 
         var actual = service.update(taskDto);
         var actualTask = taskArgCaptor.getValue();
         var actualId = intArgCaptor.getValue();
+        var actualIdPriority = intArgCaptorPriority.getValue();
 
         assertThat(actual).isTrue();
         assertThat(actualTask).usingRecursiveComparison()
@@ -204,6 +214,7 @@ class SimpleTaskServiceTest {
                         LocalDateTime.class)
                 .isEqualTo(task);
         assertThat(actualId).isEqualTo(id);
+        assertThat(actualIdPriority).isEqualTo(idPriority);
     }
 
     /**
@@ -212,8 +223,8 @@ class SimpleTaskServiceTest {
     @Test
     void whenUpdateUnSuccessfulThenGetFalse() {
         var id = 1;
-        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, new User());
-        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName());
+        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, new User(), new Priority());
+        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName(), task.getPriority().getId(), task.getPriority().getName());
         when(store.update(any(Task.class))).thenReturn(false);
 
         var actual = service.update(taskDto);
@@ -229,16 +240,22 @@ class SimpleTaskServiceTest {
         var id = 1;
         var user = new User();
         user.setId(id);
-        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, user);
-        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName());
+        var idPriority = 2;
+        var priority = new Priority();
+        priority.setId(idPriority);
+        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, user, priority);
+        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName(), task.getPriority().getId(), task.getPriority().getName());
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(userService.findById(intArgCaptor.capture())).thenReturn(Optional.of(user));
+        var intArgCaptorPriority = ArgumentCaptor.forClass(Integer.class);
+        when(priorityService.findById(intArgCaptorPriority.capture())).thenReturn(Optional.of(priority));
         var taskArgCaptor = ArgumentCaptor.forClass(Task.class);
         when(store.save(taskArgCaptor.capture())).thenReturn(true);
 
         var actual = service.save(taskDto);
         var actualTask = taskArgCaptor.getValue();
         var actualId = intArgCaptor.getValue();
+        var actualIdPriority = intArgCaptorPriority.getValue();
 
         assertThat(actual).isTrue();
         assertThat(actualTask).usingRecursiveComparison()
@@ -247,6 +264,7 @@ class SimpleTaskServiceTest {
                         LocalDateTime.class)
                 .isEqualTo(task);
         assertThat(actualId).isEqualTo(id);
+        assertThat(actualIdPriority).isEqualTo(idPriority);
     }
 
     /**
@@ -255,8 +273,8 @@ class SimpleTaskServiceTest {
     @Test
     void whenSaveUnSuccessfulThenGetFalse() {
         var id = 1;
-        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, new User());
-        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName());
+        var task = new Task(id, "test1", "desc1", LocalDateTime.now(), false, new User(), new Priority());
+        var taskDto = new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(), task.getUser().getId(), task.getUser().getName(), task.getPriority().getId(), task.getPriority().getName());
         when(store.save(any(Task.class))).thenReturn(false);
 
         var actual = service.save(taskDto);

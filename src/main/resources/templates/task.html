@@ -29,6 +29,10 @@
                     <div th:text="*{userName}" id="userName"/>
                 </div>
                 <div class="mb-3 d-flex">
+                    <label for="priority" class="form-label me-2"><b>Приоритет:</b></label>
+                    <div th:text="*{priority}" id="priority"/>
+                </div>
+                <div class="mb-3 d-flex">
                     <label for="doneLabel" class="form-label me-2"><b>Выполнено:</b></label>
                     <div th:text="*{done == true} ? 'да' : 'нет'" id="doneLabel"/>
                 </div>

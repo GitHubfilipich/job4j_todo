@@ -21,7 +21,7 @@ public class TaskStore implements Store {
     @Override
     public Collection<Task> findAll() {
         try {
-            return crudRepository.query("from Task ORDER BY created", Task.class);
+            return crudRepository.query("from Task t LEFT JOIN FETCH t.priority ORDER BY created", Task.class);
         } catch (Exception e) {
             log.error("Ошибка получения заданий", e);
         }
@@ -31,7 +31,7 @@ public class TaskStore implements Store {
     @Override
     public Collection<Task> findDone() {
         try {
-            return crudRepository.query("from Task WHERE done = true ORDER BY created", Task.class);
+            return crudRepository.query("from Task t LEFT JOIN FETCH t.priority WHERE done = true ORDER BY created", Task.class);
         } catch (Exception e) {
             log.error("Ошибка получения заданий", e);
         }
@@ -41,7 +41,7 @@ public class TaskStore implements Store {
     @Override
     public Collection<Task> findNew() {
         try {
-            return crudRepository.query("from Task WHERE done = false ORDER BY created", Task.class);
+            return crudRepository.query("from Task t LEFT JOIN FETCH t.priority WHERE done = false ORDER BY created", Task.class);
         } catch (Exception e) {
             log.error("Ошибка получения заданий", e);
         }
@@ -51,7 +51,8 @@ public class TaskStore implements Store {
     @Override
     public Optional<Task> findById(int id) {
         try {
-            return crudRepository.optional(session -> session.get(Task.class, id));
+            return crudRepository.optional("from Task t LEFT JOIN FETCH t.priority WHERE t.id = :id", Task.class,
+                    Map.of("id", id));
         } catch (Exception e) {
             log.error("Ошибка получения заданий", e);
         }

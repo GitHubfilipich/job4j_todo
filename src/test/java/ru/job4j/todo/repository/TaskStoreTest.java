@@ -82,10 +82,10 @@ class TaskStoreTest {
             users.add(user);
         }
 
-        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false, users.get(0)),
-                new Task(0, "task2", "descr2", LocalDateTime.now(), false, users.get(1)),
-                new Task(0, "task3", "descr3", LocalDateTime.now(), true, users.get(2)),
-                new Task(0, "task4", "descr4", LocalDateTime.now(), true, users.get(3)));
+        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false, users.get(0), null),
+                new Task(0, "task2", "descr2", LocalDateTime.now(), false, users.get(1), null),
+                new Task(0, "task3", "descr3", LocalDateTime.now(), true, users.get(2), null),
+                new Task(0, "task4", "descr4", LocalDateTime.now(), true, users.get(3), null));
         for (Task task : tasks) {
             store.save(task);
         }
@@ -290,7 +290,7 @@ class TaskStoreTest {
         user.setLogin("login4");
         user.setPassword("password4");
         userRepository.save(user);
-        var task = new Task(0, "NEW test1", "NEW descr1", LocalDateTime.now(), true, user);
+        var task = new Task(0, "NEW test1", "NEW descr1", LocalDateTime.now(), true, user, null);
 
         var wasSaved = store.save(task);
         var actualTask = store.findById(task.getId());

@@ -33,9 +33,9 @@ class TaskControllerTest {
      */
     @Test
     void whenGetAllThenGetPageWithTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan"),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr"),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel"));
+        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1"),
+                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr", 2, "priority2"),
+                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel", 3, "priority3"));
         when(taskService.findAll()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -53,9 +53,9 @@ class TaskControllerTest {
      */
     @Test
     void whenGetDoneThenGetPageWithDoneTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), true, 1, "Ivan"),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr"),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), true, 3, "Pavel"));
+        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), true, 1, "Ivan", 1, "priority1"),
+                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr", 2, "priority2"),
+                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), true, 3, "Pavel", 3, "priority3"));
         when(taskService.findDone()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -72,9 +72,9 @@ class TaskControllerTest {
      */
     @Test
     void whenGetNewThenGetPageWithNewTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan"),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), false, 2, "Petr"),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel"));
+        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1"),
+                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), false, 2, "Petr", 2, "priority2"),
+                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel", 3, "priority3"));
         when(taskService.findNew()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -112,7 +112,7 @@ class TaskControllerTest {
     @Test
     void whenGetTaskSuccessfulThenGetPageWithTask() {
         var id = 1;
-        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan");
+        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1");
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(taskService.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
         var model = new ConcurrentModel();
@@ -183,7 +183,7 @@ class TaskControllerTest {
     @Test
     void whenEditTaskSuccessfulThenGetPageWithTask() {
         var id = 1;
-        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan");
+        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1");
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(taskService.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
         var model = new ConcurrentModel();
@@ -253,7 +253,7 @@ class TaskControllerTest {
      */
     @Test
     void whenSaveSuccessfulThenSaveTaskAndGetPageWithTasks() {
-        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan");
+        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1");
         var taskArgCaptor = ArgumentCaptor.forClass(TaskDTO.class);
         when(taskService.save(taskArgCaptor.capture())).thenReturn(true);
         var model = new ConcurrentModel();
@@ -287,7 +287,7 @@ class TaskControllerTest {
      */
     @Test
     void whenUpdateSuccessfulThenUpdateTaskAndGetPageWithTasks() {
-        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan");
+        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1");
         var taskArgCaptor = ArgumentCaptor.forClass(TaskDTO.class);
         when(taskService.update(taskArgCaptor.capture())).thenReturn(true);
         var model = new ConcurrentModel();
