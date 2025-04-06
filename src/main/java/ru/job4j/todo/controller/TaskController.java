@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.priority.PriorityService;
 import ru.job4j.todo.service.task.TaskService;
 
 import java.time.LocalDateTime;
@@ -15,9 +16,11 @@ import java.util.Optional;
 public class TaskController {
 
     private final TaskService taskService;
+    private final PriorityService priorityService;
 
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, PriorityService priorityService) {
         this.taskService = taskService;
+        this.priorityService = priorityService;
     }
 
     @GetMapping
@@ -47,6 +50,7 @@ public class TaskController {
         taskDTO.setUserName(user.getName());
         model.addAttribute("task", taskDTO);
         model.addAttribute("mode", "taskNew");
+        model.addAttribute("priorities", priorityService.findAll());
         return "task";
     }
 
@@ -59,6 +63,7 @@ public class TaskController {
         }
         model.addAttribute("task", optionalTaskDTO.get());
         model.addAttribute("mode", "taskExist");
+        model.addAttribute("priorities", priorityService.findAll());
         return "task";
     }
 
@@ -80,6 +85,7 @@ public class TaskController {
         }
         model.addAttribute("task", optionalTaskDTO.get());
         model.addAttribute("mode", "taskEdit");
+        model.addAttribute("priorities", priorityService.findAll());
         return "task";
     }
 

@@ -28,9 +28,16 @@
                     <label for="userName" class="form-label me-2"><b>Автор:</b></label>
                     <div th:text="*{userName}" id="userName"/>
                 </div>
-                <div class="mb-3 d-flex">
+                <div class="mb-3 d-flex" th:if="${mode == 'taskExist'}">
                     <label for="priority" class="form-label me-2"><b>Приоритет:</b></label>
                     <div th:text="*{priority}" id="priority"/>
+                </div>
+                <div class="mb-3" th:if="${mode != 'taskExist'}">
+                    <label for="priorityId"><b>Приоритет:</b></label>
+                    <select class="form-control" id="priorityId" name="priorityId" th:field="*{priorityId}">
+                        <option th:each="priority : ${priorities}" th:value="${priority.id}" th:text="${priority.name}"
+                                th:selected="${priority.id==priorityId}"></option>
+                    </select>
                 </div>
                 <div class="mb-3 d-flex">
                     <label for="doneLabel" class="form-label me-2"><b>Выполнено:</b></label>

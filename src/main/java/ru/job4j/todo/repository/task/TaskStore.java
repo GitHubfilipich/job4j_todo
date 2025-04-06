@@ -82,9 +82,9 @@ public class TaskStore implements Store {
     @Override
     public boolean update(Task task) {
         try {
-            return crudRepository.updateQuery("UPDATE Task SET title = :title, description = :description WHERE id = :id",
+            return crudRepository.updateQuery("UPDATE Task SET title = :title, description = :description, priority = :priority WHERE id = :id",
                     Map.of("title", task.getTitle(), "description", task.getDescription(),
-                    "id", task.getId()));
+                    "id", task.getId(), "priority", task.getPriority()));
         } catch (Exception e) {
             log.error("Ошибка обновления заданий", e);
         }

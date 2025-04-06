@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
 import ru.job4j.todo.repository.task.Store;
@@ -32,6 +33,7 @@ class TaskStoreTest {
     private static UserRepository userRepository;
     private static List<Task> tasks;
     private static List<User> users;
+    private static List<Priority> priorities;
 
     @BeforeAll
     public static void setUp(@Autowired SessionFactory awSf) {
@@ -49,6 +51,8 @@ class TaskStoreTest {
         try (Session session = sf.openSession()) {
             var tx = session.beginTransaction();
             var query = session.createQuery("DELETE User");
+            query.executeUpdate();
+            query = session.createQuery("DELETE Priority");
             query.executeUpdate();
             tx.commit();
         }
@@ -81,11 +85,22 @@ class TaskStoreTest {
             userRepository.save(user);
             users.add(user);
         }
-
-        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false, users.get(0), null),
-                new Task(0, "task2", "descr2", LocalDateTime.now(), false, users.get(1), null),
-                new Task(0, "task3", "descr3", LocalDateTime.now(), true, users.get(2), null),
-                new Task(0, "task4", "descr4", LocalDateTime.now(), true, users.get(3), null));
+        priorities = new ArrayList<>();
+        try (Session session = sf.openSession()) {
+            var tx = session.beginTransaction();
+            for (int i = 0; i < 4; i++) {
+                var priority = new Priority();
+                priority.setName("test" + i);
+                priority.setPosition(i);
+                session.save(priority);
+                priorities.add(priority);
+            }
+            tx.commit();
+        }
+        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false, users.get(0), priorities.get(0)),
+                new Task(0, "task2", "descr2", LocalDateTime.now(), false, users.get(1), priorities.get(1)),
+                new Task(0, "task3", "descr3", LocalDateTime.now(), true, users.get(2), priorities.get(2)),
+                new Task(0, "task4", "descr4", LocalDateTime.now(), true, users.get(3), priorities.get(3)));
         for (Task task : tasks) {
             store.save(task);
         }

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.repository.CrudRepository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -23,5 +25,15 @@ public class SimplePriorityRepository implements PriorityRepository {
             log.error("Ошибка получения приоритетов", e);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Collection<Priority> findAll() {
+        try {
+            return crudRepository.query("from Priority ORDER BY name", Priority.class);
+        } catch (Exception e) {
+            log.error("Ошибка получения приоритетов", e);
+        }
+        return List.of();
     }
 }
