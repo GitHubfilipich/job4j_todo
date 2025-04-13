@@ -39,6 +39,25 @@
                                 th:selected="${priority.id==priorityId}"></option>
                     </select>
                 </div>
+                <div class="mb-3 d-flex" th:if="${mode == 'taskExist'}">
+                    <label for="categoriesName" class="form-label me-2"><b>Категории:</b></label>
+                    <div th:text="*{categoriesName}" id="categoriesName"/>
+                </div>
+                <div class="mb-3" th:if="${mode != 'taskExist'}">
+                    <label><b>Категории:</b></label>
+                    <div th:each="category : ${categories}">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   th:value="${category.id}"
+                                   th:field="*{categoriesId}"
+                                   th:id="'categoryCheckbox_' + ${category.id}"/>
+                            <label class="form-check-label"
+                                   th:for="'categoryCheckbox_' + ${category.id}"
+                                   th:text="${category.name}"></label>
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-3 d-flex">
                     <label for="doneLabel" class="form-label me-2"><b>Выполнено:</b></label>
                     <div th:text="*{done == true} ? 'да' : 'нет'" id="doneLabel"/>

@@ -7,6 +7,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.ui.ConcurrentModel;
 import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.category.CategoryService;
 import ru.job4j.todo.service.priority.PriorityService;
 import ru.job4j.todo.service.task.TaskService;
 
@@ -23,12 +24,14 @@ class TaskControllerTest {
     private TaskController taskController;
     private TaskService taskService;
     private PriorityService priorityService;
+    private CategoryService categoryService;
 
     @BeforeEach
     void setUp() {
         taskService = mock(TaskService.class);
         priorityService = mock(PriorityService.class);
-        taskController = new TaskController(taskService, priorityService);
+        categoryService = mock(CategoryService.class);
+        taskController = new TaskController(taskService, priorityService, categoryService);
     }
 
     /**
@@ -36,9 +39,7 @@ class TaskControllerTest {
      */
     @Test
     void whenGetAllThenGetPageWithTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1"),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr", 2, "priority2"),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel", 3, "priority3"));
+        var tasks = getTaskDTOS();
         when(taskService.findAll()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -51,14 +52,18 @@ class TaskControllerTest {
                         .containsExactlyInAnyOrderElementsOf(tasks);
     }
 
+    private List<TaskDTO> getTaskDTOS() {
+        return List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1", List.of(), ""),
+                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr", 2, "priority2", List.of(1), "test1"),
+                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel", 3, "priority3", List.of(1, 2), "test1, test2"));
+    }
+
     /**
      * Проверяет сценарий возврата страницы всех выполненных заданий методом {@code getDone}
      */
     @Test
     void whenGetDoneThenGetPageWithDoneTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), true, 1, "Ivan", 1, "priority1"),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), true, 2, "Petr", 2, "priority2"),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), true, 3, "Pavel", 3, "priority3"));
+        var tasks = getTaskDTOS();
         when(taskService.findDone()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -75,9 +80,7 @@ class TaskControllerTest {
      */
     @Test
     void whenGetNewThenGetPageWithNewTasks() {
-        var tasks = List.of(new TaskDTO(1, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1"),
-                new TaskDTO(2, "Test2", "Descr2", LocalDateTime.now(), false, 2, "Petr", 2, "priority2"),
-                new TaskDTO(3, "Test3", "Descr3", LocalDateTime.now(), false, 3, "Pavel", 3, "priority3"));
+        var tasks = getTaskDTOS();
         when(taskService.findNew()).thenReturn(tasks);
         var model = new ConcurrentModel();
 
@@ -115,7 +118,7 @@ class TaskControllerTest {
     @Test
     void whenGetTaskSuccessfulThenGetPageWithTask() {
         var id = 1;
-        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1");
+        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1", List.of(1), "test1");
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(taskService.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
         var model = new ConcurrentModel();
@@ -186,7 +189,7 @@ class TaskControllerTest {
     @Test
     void whenEditTaskSuccessfulThenGetPageWithTask() {
         var id = 1;
-        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1");
+        var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1", List.of(1), "test1");
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(taskService.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
         var model = new ConcurrentModel();
@@ -256,7 +259,7 @@ class TaskControllerTest {
      */
     @Test
     void whenSaveSuccessfulThenSaveTaskAndGetPageWithTasks() {
-        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1");
+        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1", List.of(1), "test1");
         var taskArgCaptor = ArgumentCaptor.forClass(TaskDTO.class);
         when(taskService.save(taskArgCaptor.capture())).thenReturn(true);
         var model = new ConcurrentModel();
@@ -290,7 +293,7 @@ class TaskControllerTest {
      */
     @Test
     void whenUpdateSuccessfulThenUpdateTaskAndGetPageWithTasks() {
-        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1");
+        var task = new TaskDTO(1, "test1", "descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1", List.of(1), "test1");
         var taskArgCaptor = ArgumentCaptor.forClass(TaskDTO.class);
         when(taskService.update(taskArgCaptor.capture())).thenReturn(true);
         var model = new ConcurrentModel();

@@ -21,7 +21,7 @@ public class TaskStore implements Store {
     @Override
     public Collection<Task> findAll() {
         try {
-            return crudRepository.query("from Task t LEFT JOIN FETCH t.priority ORDER BY created", Task.class);
+            return crudRepository.query("SELECT DISTINCT t from Task t LEFT JOIN FETCH t.priority LEFT JOIN FETCH t.categories ORDER BY t.created", Task.class);
         } catch (Exception e) {
             log.error("Ошибка получения заданий", e);
         }
@@ -31,7 +31,7 @@ public class TaskStore implements Store {
     @Override
     public Collection<Task> findDone() {
         try {
-            return crudRepository.query("from Task t LEFT JOIN FETCH t.priority WHERE done = true ORDER BY created", Task.class);
+            return crudRepository.query("SELECT DISTINCT t from Task t LEFT JOIN FETCH t.priority LEFT JOIN FETCH t.categories WHERE done = true ORDER BY t.created", Task.class);
         } catch (Exception e) {
             log.error("Ошибка получения заданий", e);
         }
@@ -41,7 +41,7 @@ public class TaskStore implements Store {
     @Override
     public Collection<Task> findNew() {
         try {
-            return crudRepository.query("from Task t LEFT JOIN FETCH t.priority WHERE done = false ORDER BY created", Task.class);
+            return crudRepository.query("SELECT DISTINCT t from Task t LEFT JOIN FETCH t.priority LEFT JOIN FETCH t.categories WHERE done = false ORDER BY t.created", Task.class);
         } catch (Exception e) {
             log.error("Ошибка получения заданий", e);
         }
@@ -51,7 +51,7 @@ public class TaskStore implements Store {
     @Override
     public Optional<Task> findById(int id) {
         try {
-            return crudRepository.optional("from Task t LEFT JOIN FETCH t.priority WHERE t.id = :id", Task.class,
+            return crudRepository.optional("SELECT DISTINCT t from Task t LEFT JOIN FETCH t.priority LEFT JOIN FETCH t.categories WHERE t.id = :id", Task.class,
                     Map.of("id", id));
         } catch (Exception e) {
             log.error("Ошибка получения заданий", e);
@@ -82,9 +82,8 @@ public class TaskStore implements Store {
     @Override
     public boolean update(Task task) {
         try {
-            return crudRepository.updateQuery("UPDATE Task SET title = :title, description = :description, priority = :priority WHERE id = :id",
-                    Map.of("title", task.getTitle(), "description", task.getDescription(),
-                    "id", task.getId(), "priority", task.getPriority()));
+            crudRepository.run(session -> session.update(task));
+            return true;
         } catch (Exception e) {
             log.error("Ошибка обновления заданий", e);
         }

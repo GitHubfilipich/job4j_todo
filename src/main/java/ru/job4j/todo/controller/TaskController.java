@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.model.User;
+import ru.job4j.todo.service.category.CategoryService;
 import ru.job4j.todo.service.priority.PriorityService;
 import ru.job4j.todo.service.task.TaskService;
 
@@ -17,10 +18,12 @@ public class TaskController {
 
     private final TaskService taskService;
     private final PriorityService priorityService;
+    private final CategoryService categoryService;
 
-    public TaskController(TaskService taskService, PriorityService priorityService) {
+    public TaskController(TaskService taskService, PriorityService priorityService, CategoryService categoryService) {
         this.taskService = taskService;
         this.priorityService = priorityService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping
@@ -51,6 +54,7 @@ public class TaskController {
         model.addAttribute("task", taskDTO);
         model.addAttribute("mode", "taskNew");
         model.addAttribute("priorities", priorityService.findAll());
+        model.addAttribute("categories", categoryService.findAll());
         return "task";
     }
 
@@ -64,6 +68,7 @@ public class TaskController {
         model.addAttribute("task", optionalTaskDTO.get());
         model.addAttribute("mode", "taskExist");
         model.addAttribute("priorities", priorityService.findAll());
+        model.addAttribute("categories", categoryService.findAll());
         return "task";
     }
 
@@ -86,6 +91,7 @@ public class TaskController {
         model.addAttribute("task", optionalTaskDTO.get());
         model.addAttribute("mode", "taskEdit");
         model.addAttribute("priorities", priorityService.findAll());
+        model.addAttribute("categories", categoryService.findAll());
         return "task";
     }
 

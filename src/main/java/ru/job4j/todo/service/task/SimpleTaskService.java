@@ -2,26 +2,30 @@ package ru.job4j.todo.service.task;
 
 import org.springframework.stereotype.Controller;
 import ru.job4j.todo.dto.TaskDTO;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.repository.task.Store;
+import ru.job4j.todo.service.category.CategoryService;
 import ru.job4j.todo.service.priority.PriorityService;
 import ru.job4j.todo.service.user.UserService;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 public class SimpleTaskService implements TaskService {
     private final Store store;
     private final UserService userService;
     private final PriorityService priorityService;
+    private final CategoryService categoryService;
 
-    public SimpleTaskService(Store store, UserService userService, PriorityService priorityService) {
+    public SimpleTaskService(Store store, UserService userService, PriorityService priorityService, CategoryService categoryService) {
         this.store = store;
         this.userService = userService;
         this.priorityService = priorityService;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -75,12 +79,22 @@ public class SimpleTaskService implements TaskService {
         Priority priority = task.getPriority();
         return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(),
                 task.getUser().getId(), task.getUser().getName(), priority != null ? priority.getId() : 0,
-                priority != null ? priority.getName() : "");
+                priority != null ? priority.getName() : "",
+                task.getCategories().stream().map(Category::getId).toList(),
+                 task.getCategories().stream()
+                         .map(Category::getName)
+                         .sorted()
+                         .collect(Collectors.joining(", ")));
     }
 
     private Task taskDtoToTask(TaskDTO task) {
+        Map<Integer, Category> categoryMap = categoryService.findAll().stream()
+                .collect(Collectors.toMap(Category::getId, Function.identity()));
         return new Task(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(),
                 userService.findById(task.getUserId()).orElse(null),
-                priorityService.findById(task.getPriorityId()).orElse(null));
+                priorityService.findById(task.getPriorityId()).orElse(null),
+                task.getCategoriesId().stream()
+                        .map(categoryMap::get)
+                        .filter(Objects::nonNull).toList());
     }
 }

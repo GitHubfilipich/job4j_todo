@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
 import ru.job4j.todo.model.User;
@@ -34,6 +35,7 @@ class TaskStoreTest {
     private static List<Task> tasks;
     private static List<User> users;
     private static List<Priority> priorities;
+    private static List<Category> categories;
 
     @BeforeAll
     public static void setUp(@Autowired SessionFactory awSf) {
@@ -50,10 +52,9 @@ class TaskStoreTest {
         }
         try (Session session = sf.openSession()) {
             var tx = session.beginTransaction();
-            var query = session.createQuery("DELETE User");
-            query.executeUpdate();
-            query = session.createQuery("DELETE Priority");
-            query.executeUpdate();
+            session.createQuery("DELETE User").executeUpdate();
+            session.createQuery("DELETE Priority").executeUpdate();
+            session.createQuery("DELETE Category").executeUpdate();
             tx.commit();
         }
     }
@@ -97,10 +98,25 @@ class TaskStoreTest {
             }
             tx.commit();
         }
-        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false, users.get(0), priorities.get(0)),
-                new Task(0, "task2", "descr2", LocalDateTime.now(), false, users.get(1), priorities.get(1)),
-                new Task(0, "task3", "descr3", LocalDateTime.now(), true, users.get(2), priorities.get(2)),
-                new Task(0, "task4", "descr4", LocalDateTime.now(), true, users.get(3), priorities.get(3)));
+        categories = new ArrayList<>();
+        try (Session session = sf.openSession()) {
+            var tx = session.beginTransaction();
+            for (int i = 0; i < 4; i++) {
+                var category = new Category();
+                category.setName("test" + i);
+                session.save(category);
+                categories.add(category);
+            }
+            tx.commit();
+        }
+        tasks = List.of(new Task(0, "task1", "descr1", LocalDateTime.now(), false, users.get(0),
+                        priorities.get(0),                        List.of(categories.get(0))),
+                new Task(0, "task2", "descr2", LocalDateTime.now(), false, users.get(1),
+                        priorities.get(1), List.of(categories.get(0), categories.get(1))),
+                new Task(0, "task3", "descr3", LocalDateTime.now(), true, users.get(2),
+                        priorities.get(2), List.of(categories.get(0), categories.get(1), categories.get(2))),
+                new Task(0, "task4", "descr4", LocalDateTime.now(), true, users.get(3),
+                        priorities.get(3), List.of(categories.get(3))));
         for (Task task : tasks) {
             store.save(task);
         }
@@ -305,7 +321,7 @@ class TaskStoreTest {
         user.setLogin("login4");
         user.setPassword("password4");
         userRepository.save(user);
-        var task = new Task(0, "NEW test1", "NEW descr1", LocalDateTime.now(), true, user, null);
+        var task = new Task(0, "NEW test1", "NEW descr1", LocalDateTime.now(), true, user, null, List.of());
 
         var wasSaved = store.save(task);
         var actualTask = store.findById(task.getId());

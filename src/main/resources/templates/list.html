@@ -11,6 +11,7 @@
                 <th scope="col">Дата создания</th>
                 <th scope="col">Автор</th>
                 <th scope="col">Приоритет</th>
+                <th scope="col">Категории</th>
                 <th scope="col">Выполнено</th>
             </tr>
             </thead>
@@ -20,6 +21,7 @@
                 <td th:text="${task.created != null} ? ${task.created.format(T(java.time.format.DateTimeFormatter).ofPattern('dd MMMM yyyy HH:mm'))} : ''"/>
                 <td th:text="${task.userName}"/>
                 <td th:text="${task.priority}"/>
+                <td th:text="${task.categoriesName}"/>
                 <td th:text="${task.done != null and task.done == true} ? 'да' : ''"/>
             </tr>
             </tbody>

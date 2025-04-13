@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,4 +20,6 @@ public class TaskDTO {
     private String userName;
     private int priorityId;
     private String priority;
+    private List<Integer> categoriesId;
+    private String categoriesName;
 }
