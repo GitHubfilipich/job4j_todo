@@ -32,6 +32,7 @@ class SimpleTaskServiceTest {
     private CategoryService categoryService;
     private List<Task> tasks;
     private List<TaskDTO> taskDtos;
+    private User user;
 
     @BeforeEach
     void setUp() {
@@ -40,6 +41,11 @@ class SimpleTaskServiceTest {
         priorityService = mock(PriorityService.class);
         categoryService = mock(CategoryService.class);
         service = new SimpleTaskService(store, userService, priorityService, categoryService);
+        user = new User();
+        user.setName("Test name");
+        user.setLogin("Test login");
+        user.setPassword("Test password");
+        user.setTimezone("UTC");
     }
 
     /**
@@ -50,7 +56,7 @@ class SimpleTaskServiceTest {
         addTasksAndDTO();
         when(store.findAll()).thenReturn(tasks);
 
-        var actualtaskDtos = service.findAll();
+        var actualtaskDtos = service.findAll(user);
 
         assertThat(actualtaskDtos).containsExactlyInAnyOrderElementsOf(taskDtos);
     }
@@ -80,7 +86,7 @@ class SimpleTaskServiceTest {
         addTasksAndDTO();
         when(store.findDone()).thenReturn(tasks);
 
-        var actualtaskDtos = service.findDone();
+        var actualtaskDtos = service.findDone(user);
 
         assertThat(actualtaskDtos).containsExactlyInAnyOrderElementsOf(taskDtos);
     }
@@ -93,7 +99,7 @@ class SimpleTaskServiceTest {
         addTasksAndDTO();
         when(store.findNew()).thenReturn(tasks);
 
-        var actualtaskDtos = service.findNew();
+        var actualtaskDtos = service.findNew(user);
 
         assertThat(actualtaskDtos).containsExactlyInAnyOrderElementsOf(taskDtos);
     }
@@ -112,7 +118,7 @@ class SimpleTaskServiceTest {
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
         when(store.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
 
-        var actualtaskDto = service.findById(id);
+        var actualtaskDto = service.findById(id, user);
         var actualId = intArgCaptor.getValue();
 
         assertThat(actualtaskDto).isNotEmpty();
@@ -128,7 +134,7 @@ class SimpleTaskServiceTest {
         var id = 1;
         when(store.findById(any(Integer.class))).thenReturn(Optional.empty());
 
-        var actualtaskDto = service.findById(id);
+        var actualtaskDto = service.findById(id, user);
 
         assertThat(actualtaskDto).isEmpty();
     }

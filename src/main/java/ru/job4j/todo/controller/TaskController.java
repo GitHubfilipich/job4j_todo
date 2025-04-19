@@ -27,21 +27,21 @@ public class TaskController {
     }
 
     @GetMapping
-    public String getAll(Model model) {
-        model.addAttribute("tasks", taskService.findAll());
+    public String getAll(Model model, @SessionAttribute(name = "user") User user) {
+        model.addAttribute("tasks", taskService.findAll(user));
         return "list";
     }
 
     @GetMapping("/done")
-    public String getDone(Model model) {
-        model.addAttribute("tasks", taskService.findDone());
+    public String getDone(Model model, @SessionAttribute(name = "user") User user) {
+        model.addAttribute("tasks", taskService.findDone(user));
         model.addAttribute("mode", "listDone");
         return "list";
     }
 
     @GetMapping("/new")
-    public String getNew(Model model) {
-        model.addAttribute("tasks", taskService.findNew());
+    public String getNew(Model model, @SessionAttribute(name = "user") User user) {
+        model.addAttribute("tasks", taskService.findNew(user));
         model.addAttribute("mode", "listNew");
         return "list";
     }
@@ -59,8 +59,8 @@ public class TaskController {
     }
 
     @GetMapping("/task/{id}")
-    public String getTask(Model model, @PathVariable int id) {
-        var optionalTaskDTO = taskService.findById(id);
+    public String getTask(Model model, @PathVariable int id, @SessionAttribute(name = "user") User user) {
+        var optionalTaskDTO = taskService.findById(id, user);
         if (optionalTaskDTO.isEmpty()) {
             model.addAttribute("message", "Не удалось найти задание");
             return "errors/404";
@@ -82,8 +82,8 @@ public class TaskController {
     }
 
     @GetMapping("/task/edit/{id}")
-    public String editTask(Model model, @PathVariable int id) {
-        Optional<TaskDTO> optionalTaskDTO = taskService.findById(id);
+    public String editTask(Model model, @PathVariable int id, @SessionAttribute(name = "user") User user) {
+        Optional<TaskDTO> optionalTaskDTO = taskService.findById(id, user);
         if (optionalTaskDTO.isEmpty()) {
             model.addAttribute("message", "Не удалось найти задание");
             return "errors/404";

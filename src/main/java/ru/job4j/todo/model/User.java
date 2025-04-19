@@ -14,8 +14,10 @@ import javax.persistence.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
-    String name;
-    String login;
-    String password;
+    private int id;
+    private String name;
+    private String login;
+    private String password;
+    @Column(name = "user_zone")
+    private String timezone;
 }

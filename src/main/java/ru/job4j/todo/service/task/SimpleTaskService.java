@@ -5,11 +5,13 @@ import ru.job4j.todo.dto.TaskDTO;
 import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Priority;
 import ru.job4j.todo.model.Task;
+import ru.job4j.todo.model.User;
 import ru.job4j.todo.repository.task.Store;
 import ru.job4j.todo.service.category.CategoryService;
 import ru.job4j.todo.service.priority.PriorityService;
 import ru.job4j.todo.service.user.UserService;
 
+import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,24 +31,24 @@ public class SimpleTaskService implements TaskService {
     }
 
     @Override
-    public Collection<TaskDTO> findAll() {
-        return taskCollectionToTaskDtoCollection(store.findAll());
+    public Collection<TaskDTO> findAll(User user) {
+        return taskCollectionToTaskDtoCollection(store.findAll(), user);
     }
 
     @Override
-    public Collection<TaskDTO> findDone() {
-        return taskCollectionToTaskDtoCollection(store.findDone());
+    public Collection<TaskDTO> findDone(User user) {
+        return taskCollectionToTaskDtoCollection(store.findDone(), user);
     }
 
     @Override
-    public Collection<TaskDTO> findNew() {
-        return taskCollectionToTaskDtoCollection(store.findNew());
+    public Collection<TaskDTO> findNew(User user) {
+        return taskCollectionToTaskDtoCollection(store.findNew(), user);
     }
 
     @Override
-    public Optional<TaskDTO> findById(int id) {
+    public Optional<TaskDTO> findById(int id, User user) {
         return store.findById(id)
-                .map(this::taskToTaskDto);
+                .map(task -> this.taskToTaskDto(task, user));
     }
 
     @Override
@@ -69,17 +71,20 @@ public class SimpleTaskService implements TaskService {
         return store.save(taskDtoToTask(task));
     }
 
-    private List<TaskDTO> taskCollectionToTaskDtoCollection(Collection<Task> taskCollection) {
+    private List<TaskDTO> taskCollectionToTaskDtoCollection(Collection<Task> taskCollection, User user) {
         return taskCollection.stream()
-                .map(this::taskToTaskDto)
+                .map(task -> taskToTaskDto(task, user))
                 .toList();
     }
 
-    private TaskDTO taskToTaskDto(Task task) {
+    private TaskDTO taskToTaskDto(Task task, User user) {
         Priority priority = task.getPriority();
-        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(), task.getCreated(), task.isDone(),
-                task.getUser().getId(), task.getUser().getName(), priority != null ? priority.getId() : 0,
-                priority != null ? priority.getName() : "",
+        return new TaskDTO(task.getId(), task.getTitle(), task.getDescription(),
+                task.getCreated().atZone(ZoneId.of("UTC")).
+                        withZoneSameInstant(user.getTimezone() != null ? ZoneId.of(user.getTimezone()) : TimeZone.getDefault().toZoneId())
+                        .toLocalDateTime(),
+                task.isDone(), task.getUser().getId(), task.getUser().getName(),
+                priority != null ? priority.getId() : 0, priority != null ? priority.getName() : "",
                 task.getCategories().stream().map(Category::getId).toList(),
                  task.getCategories().stream()
                          .map(Category::getName)

@@ -25,6 +25,7 @@ class TaskControllerTest {
     private TaskService taskService;
     private PriorityService priorityService;
     private CategoryService categoryService;
+    private User user;
 
     @BeforeEach
     void setUp() {
@@ -32,6 +33,11 @@ class TaskControllerTest {
         priorityService = mock(PriorityService.class);
         categoryService = mock(CategoryService.class);
         taskController = new TaskController(taskService, priorityService, categoryService);
+        user = new User();
+        user.setName("Test name");
+        user.setLogin("Test login");
+        user.setPassword("Test password");
+        user.setTimezone("UTC");
     }
 
     /**
@@ -40,16 +46,19 @@ class TaskControllerTest {
     @Test
     void whenGetAllThenGetPageWithTasks() {
         var tasks = getTaskDTOS();
-        when(taskService.findAll()).thenReturn(tasks);
+        var userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        when(taskService.findAll(userArgumentCaptor.capture())).thenReturn(tasks);
         var model = new ConcurrentModel();
 
-        var actual = taskController.getAll(model);
+        var actual = taskController.getAll(model, user);
         var actualTasks = model.getAttribute("tasks");
+        var actualUser = userArgumentCaptor.getValue();
 
         assertThat(actual).isEqualTo("list");
         assertThat(actualTasks)
                 .asInstanceOf(InstanceOfAssertFactories.collection(TaskDTO.class))
                         .containsExactlyInAnyOrderElementsOf(tasks);
+        assertThat(actualUser).isEqualTo(user);
     }
 
     private List<TaskDTO> getTaskDTOS() {
@@ -64,15 +73,18 @@ class TaskControllerTest {
     @Test
     void whenGetDoneThenGetPageWithDoneTasks() {
         var tasks = getTaskDTOS();
-        when(taskService.findDone()).thenReturn(tasks);
+        var userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        when(taskService.findDone(userArgumentCaptor.capture())).thenReturn(tasks);
         var model = new ConcurrentModel();
 
-        var actual = taskController.getDone(model);
+        var actual = taskController.getDone(model, user);
         var actualTasks = model.getAttribute("tasks");
+        var actualUser = userArgumentCaptor.getValue();
 
         assertThat(actual).isEqualTo("list");
         assertThat(actualTasks).asInstanceOf(InstanceOfAssertFactories.collection(TaskDTO.class))
                 .containsExactlyInAnyOrderElementsOf(tasks);
+        assertThat(actualUser).isEqualTo(user);
     }
 
     /**
@@ -81,15 +93,18 @@ class TaskControllerTest {
     @Test
     void whenGetNewThenGetPageWithNewTasks() {
         var tasks = getTaskDTOS();
-        when(taskService.findNew()).thenReturn(tasks);
+        var userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        when(taskService.findNew(userArgumentCaptor.capture())).thenReturn(tasks);
         var model = new ConcurrentModel();
 
-        var actual = taskController.getNew(model);
+        var actual = taskController.getNew(model, user);
         var actualTasks = model.getAttribute("tasks");
+        var actualUser = userArgumentCaptor.getValue();
 
         assertThat(actual).isEqualTo("list");
         assertThat(actualTasks).asInstanceOf(InstanceOfAssertFactories.collection(TaskDTO.class))
                 .containsExactlyInAnyOrderElementsOf(tasks);
+        assertThat(actualUser).isEqualTo(user);
     }
 
     /**
@@ -120,18 +135,21 @@ class TaskControllerTest {
         var id = 1;
         var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1", List.of(1), "test1");
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
-        when(taskService.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
+        var userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        when(taskService.findById(intArgCaptor.capture(), userArgumentCaptor.capture())).thenReturn(Optional.of(task));
         var model = new ConcurrentModel();
 
-        var actual = taskController.getTask(model, id);
+        var actual = taskController.getTask(model, id, user);
         var actualTask = model.getAttribute("task");
         var actualMode = model.getAttribute("mode");
         var actualId = intArgCaptor.getValue();
+        var actualUser = userArgumentCaptor.getValue();
 
         assertThat(actual).isEqualTo("task");
         assertThat(actualTask).isEqualTo(task);
         assertThat(actualMode).isEqualTo("taskExist");
         assertThat(actualId).isEqualTo(id);
+        assertThat(actualUser).isEqualTo(user);
     }
 
     /**
@@ -140,10 +158,10 @@ class TaskControllerTest {
     @Test
     void whenGetTaskUnSuccessfulThenGetErrorPage() {
         var id = 1;
-        when(taskService.findById(any(Integer.class))).thenReturn(Optional.empty());
+        when(taskService.findById(any(Integer.class), any(User.class))).thenReturn(Optional.empty());
         var model = new ConcurrentModel();
 
-        var actual = taskController.getTask(model, id);
+        var actual = taskController.getTask(model, id, user);
         var actualMessage = model.getAttribute("message");
 
         assertThat(actual).isEqualTo("errors/404");
@@ -191,18 +209,21 @@ class TaskControllerTest {
         var id = 1;
         var task = new TaskDTO(id, "Test1", "Descr1", LocalDateTime.now(), false, 1, "Ivan", 1, "priority1", List.of(1), "test1");
         var intArgCaptor = ArgumentCaptor.forClass(Integer.class);
-        when(taskService.findById(intArgCaptor.capture())).thenReturn(Optional.of(task));
+        var userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+        when(taskService.findById(intArgCaptor.capture(), userArgumentCaptor.capture())).thenReturn(Optional.of(task));
         var model = new ConcurrentModel();
 
-        var actual = taskController.editTask(model, id);
+        var actual = taskController.editTask(model, id, user);
         var actualTask = model.getAttribute("task");
         var actualMode = model.getAttribute("mode");
         var actualId = intArgCaptor.getValue();
+        var actualUser = userArgumentCaptor.getValue();
 
         assertThat(actual).isEqualTo("task");
         assertThat(actualTask).isEqualTo(task);
         assertThat(actualMode).isEqualTo("taskEdit");
         assertThat(actualId).isEqualTo(id);
+        assertThat(actualUser).isEqualTo(user);
     }
 
     /**
@@ -211,10 +232,10 @@ class TaskControllerTest {
     @Test
     void whenEditTaskUnSuccessfulThenGetErrorPage() {
         var id = 1;
-        when(taskService.findById(any(Integer.class))).thenReturn(Optional.empty());
+        when(taskService.findById(any(Integer.class), any(User.class))).thenReturn(Optional.empty());
         var model = new ConcurrentModel();
 
-        var actual = taskController.editTask(model, id);
+        var actual = taskController.editTask(model, id, user);
         var actualMessage = model.getAttribute("message");
 
         assertThat(actual).isEqualTo("errors/404");
